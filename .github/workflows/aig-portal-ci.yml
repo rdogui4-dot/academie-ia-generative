@@ -1,0 +1,58 @@
+name: AIG Portal CI
+
+on:
+  pull_request:
+    paths:
+      - "portal/**"
+      - ".github/workflows/aig-portal-ci.yml"
+  push:
+    branches:
+      - main
+      - aig-mvp-portal
+    paths:
+      - "portal/**"
+      - ".github/workflows/aig-portal-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aig-portal-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Typecheck, lint, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: portal
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_SUPABASE_URL: "https://izjhdcexyeasnlpkkljp.supabase.co"
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_ci_placeholder"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: portal/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
