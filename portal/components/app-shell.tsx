@@ -8,7 +8,8 @@ const items = [
   ["Missions","/missions"],
   ["Portfolio","/portfolio"],
   ["Paiements","/paiements"],
-  ["Support","/support"]
+  ["Support","/support"],
+  ["Sécurité","/securite/mfa"]
 ] as const;
 
 export function AppShell({ children, active }: { children: React.ReactNode; active: string }) {
