@@ -3,6 +3,14 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+function strongPassword(password: string) {
+  return password.length >= 12
+    && /[a-z]/.test(password)
+    && /[A-Z]/.test(password)
+    && /\d/.test(password)
+    && /[^A-Za-z0-9]/.test(password);
+}
+
 export async function signIn(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
@@ -11,7 +19,10 @@ export async function signIn(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) redirect("/connexion?error=connexion");
-  redirect("/dashboard");
+
+  // Toute connexion passe par le garde MFA. Les utilisateurs non privilégiés
+  // sont redirigés immédiatement vers le dashboard.
+  redirect("/mfa");
 }
 
 export async function signUp(formData: FormData) {
@@ -19,7 +30,7 @@ export async function signUp(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  if (display_name.length < 2 || !email || password.length < 10) {
+  if (display_name.length < 2 || !email || !strongPassword(password)) {
     redirect("/connexion?mode=signup&error=validation");
   }
 
