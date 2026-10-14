@@ -31,7 +31,20 @@ export default async function LoginPage({ searchParams }: Props) {
           </div>
           <div className="field">
             <label htmlFor="password">Mot de passe</label>
-            <input className="input" id="password" name="password" type="password" minLength={signup ? 10 : 8} required autoComplete={signup ? "new-password" : "current-password"} />
+            <input
+              className="input"
+              id="password"
+              name="password"
+              type="password"
+              minLength={signup ? 12 : 8}
+              required
+              autoComplete={signup ? "new-password" : "current-password"}
+            />
+            {signup && (
+              <small style={{color:"#64748B"}}>
+                12 caractères minimum avec majuscule, minuscule, chiffre et symbole.
+              </small>
+            )}
           </div>
           <button className="btn btn-primary" type="submit" style={{width:"100%"}}>
             {signup ? "Créer mon compte" : "Se connecter"}
